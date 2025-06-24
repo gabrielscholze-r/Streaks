@@ -1,42 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import 'viewmodels/habit_viewmodel.dart';
-import 'views/home_screen.dart';
-import 'views/add_habit_screen.dart';
-import 'views/habit_detail_screen.dart';
-import 'services/habit_storage_service.dart';
-import 'services/reminder_service.dart';
+import 'package:streaks/core/di/injection_container.dart' as di;
+import 'package:streaks/presentation/pages/home_page.dart';
+
+final sl = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final reminderService = ReminderService(FlutterLocalNotificationsPlugin());
-  await reminderService.init();
+  await di.init();
 
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => HabitViewModel(HabitStorageService(), reminderService),
-      child: HabitApp(),
-    ),
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
   );
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) async {
+      debugPrint('Notification payload: ${response.payload}');
+    },
+  );
+
+  runApp(const MyApp());
 }
 
-class HabitApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Habit App',
+      title: 'Streaks',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        useMaterial3: true,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => HomeScreen(),
-        '/add': (context) => AddHabitScreen(),
-        '/detail': (context) => HabitDetailScreen(),
-      },
+      home: const HomePage(),
     );
   }
 }
