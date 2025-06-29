@@ -94,7 +94,8 @@ class _AddEditHabitPageState extends State<AddEditHabitPage> {
                     const SizedBox(height: 24),
                     const Text(
                       'Remind Me On:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -112,7 +113,8 @@ class _AddEditHabitPageState extends State<AddEditHabitPage> {
                     const SizedBox(height: 24),
                     const Text(
                       'Notification Time:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     ListTile(
@@ -125,6 +127,14 @@ class _AddEditHabitPageState extends State<AddEditHabitPage> {
                         final TimeOfDay? pickedTime = await showTimePicker(
                           context: context,
                           initialTime: viewModel.selectedTime,
+                          initialEntryMode: TimePickerEntryMode.dial,
+                          builder: (BuildContext context, Widget? child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(alwaysUse24HourFormat: true),
+                              child: child!,
+                            );
+                          },
                         );
                         if (pickedTime != null) {
                           viewModel.selectedTime = pickedTime;
@@ -145,16 +155,22 @@ class _AddEditHabitPageState extends State<AddEditHabitPage> {
                                   } else {
                                     if (!mounted) return;
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(viewModel.errorMessage ?? 'An error occurred.')),
+                                      SnackBar(
+                                          content: Text(
+                                              viewModel.errorMessage ??
+                                                  'An error occurred.')),
                                     );
                                   }
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 15),
                                 textStyle: const TextStyle(fontSize: 18),
                               ),
-                              child: Text(widget.habit == null ? 'Add Habit' : 'Save Changes'),
+                              child: Text(widget.habit == null
+                                  ? 'Add Habit'
+                                  : 'Save Changes'),
                             ),
                     ),
                     if (viewModel.errorMessage != null && !viewModel.isSaving)

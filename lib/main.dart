@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+import 'package:streaks/presentation/pages/main_page.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:streaks/core/di/injection_container.dart' as di;
-import 'package:streaks/presentation/pages/home_page.dart';
+import 'package:flutter/foundation.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 final sl = GetIt.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await di.init();
+  tz.initializeTimeZones();
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    var status = await Permission.scheduleExactAlarm.status;
+
+    if (status.isDenied) {
+      status = await Permission.scheduleExactAlarm.request();
+    }
+    if (status.isPermanentlyDenied) {
+      debugPrint(
+          'Exact alarm permission permanently denied. Opening settings...');
+      await openAppSettings();
+    } else if (status.isGranted) {
+      debugPrint('Exact alarm permission granted.');
+    } else {
+      debugPrint('Exact alarm permission status: $status');
+    }
+  }
 
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -38,6 +56,8 @@ void main() async {
     },
   );
 
+  await di.init(flutterLocalNotificationsPlugin);
+
   runApp(const MyApp());
 }
 
@@ -53,7 +73,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const MainPage(),
     );
   }
 }

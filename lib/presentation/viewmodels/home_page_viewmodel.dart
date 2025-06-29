@@ -3,11 +3,16 @@ import 'package:streaks/domain/entities/habit.dart';
 import 'package:streaks/domain/usecases/get_habits.dart';
 import 'package:streaks/domain/usecases/save_habit.dart';
 import 'package:streaks/domain/usecases/delete_habit.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart'
+    as tz; 
 
 class HomePageViewModel extends ChangeNotifier {
   final GetHabits _getHabits;
   final SaveHabit _saveHabit;
   final DeleteHabit _deleteHabit;
+  final FlutterLocalNotificationsPlugin
+      _localNotificationsPlugin; 
 
   List<Habit> _habits = [];
   List<Habit> get habits => _habits;
@@ -18,13 +23,18 @@ class HomePageViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  
   HomePageViewModel({
     required GetHabits getHabits,
     required SaveHabit saveHabit,
     required DeleteHabit deleteHabit,
+    required FlutterLocalNotificationsPlugin
+        localNotificationsPlugin, 
   })  : _getHabits = getHabits,
         _saveHabit = saveHabit,
-        _deleteHabit = deleteHabit;
+        _deleteHabit = deleteHabit,
+        _localNotificationsPlugin =
+            localNotificationsPlugin; 
 
   Future<void> fetchHabits() async {
     _isLoading = true;
@@ -65,11 +75,24 @@ class HomePageViewModel extends ChangeNotifier {
   Future<void> deleteHabit(String id) async {
     _errorMessage = null;
     try {
+      
+      await _cancelNotificationsForHabit(id);
+
       await _deleteHabit.call(id);
       await fetchHabits();
     } catch (e) {
       _errorMessage = 'Failed to delete habit: $e';
       notifyListeners();
+    }
+  }
+
+  
+  Future<void> _cancelNotificationsForHabit(String habitId) async {
+    for (int i = 0; i < 7; i++) {
+      final notificationId = habitId.hashCode + i;
+      await _localNotificationsPlugin.cancel(notificationId);
+      debugPrint(
+          'Canceled notification with ID: $notificationId for habit $habitId');
     }
   }
 

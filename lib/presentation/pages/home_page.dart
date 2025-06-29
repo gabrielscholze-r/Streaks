@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
@@ -83,8 +85,9 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(habit.description),
+                        
                         Text(
-                            'Notification: ${habit.notificationTime.hour}:${habit.notificationTime.minute.toString().padLeft(2, '0')}'),
+                            'Notification: ${habit.notificationTime.hour.toString().padLeft(2, '0')}:${habit.notificationTime.minute.toString().padLeft(2, '0')}'),
                         Text('Streak: ${habit.streakCount} days'),
                       ],
                     ),
@@ -140,10 +143,10 @@ class _HomePageState extends State<HomePage> {
                                         Navigator.of(context).pop();
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  '${habit.name} deleted.')),
-                                        );
+                                              SnackBar(
+                                                  content: Text(
+                                                      '${habit.name} deleted.')),
+                                            );
                                       },
                                     ),
                                   ],

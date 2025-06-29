@@ -3,14 +3,22 @@ import 'package:streaks/domain/entities/habit.dart';
 import 'package:streaks/domain/entities/time_of_day.dart' as streaks_time;
 import 'package:streaks/domain/usecases/save_habit.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz; 
 
 class AddEditHabitViewModel extends ChangeNotifier {
   final SaveHabit _saveHabit;
   final Uuid _uuid;
+  final FlutterLocalNotificationsPlugin _localNotificationsPlugin;
 
-  AddEditHabitViewModel({required SaveHabit saveHabit, Uuid? uuid})
-      : _saveHabit = saveHabit,
-        _uuid = uuid ?? const Uuid();
+  AddEditHabitViewModel({
+    required SaveHabit saveHabit,
+    Uuid? uuid,
+    required FlutterLocalNotificationsPlugin localNotificationsPlugin,
+  })  : _saveHabit = saveHabit,
+        _uuid = uuid ?? const Uuid(),
+        _localNotificationsPlugin = localNotificationsPlugin;
 
   Habit? _currentHabit;
   String _name = '';
@@ -106,6 +114,17 @@ class AddEditHabitViewModel extends ChangeNotifier {
           );
 
       await _saveHabit.call(habitToSave);
+
+      
+      if (_currentHabit != null) {
+        await _cancelNotificationsForHabit(
+            habitToSave.id); 
+      }
+      await _scheduleNotificationsForHabit(habitToSave);
+
+      
+      await debugListPendingNotifications(); 
+
       _isSaving = false;
       notifyListeners();
       return true;
@@ -115,5 +134,109 @@ class AddEditHabitViewModel extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  Future<void> _scheduleNotificationsForHabit(Habit habit) async {
+    await _cancelNotificationsForHabit(
+        habit.id); 
+
+    if (habit.reminderDays.isEmpty) {
+      return;
+    }
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'streaks_habit_channel', 
+      'Streaks Habit Reminders',
+      channelDescription: 'Reminders for your daily habits',
+      importance: Importance.high,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+    final DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails();
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    for (final dayIndex in habit.reminderDays) {
+      
+      int targetDayOfWeek = (dayIndex == 0) ? DateTime.sunday : dayIndex + 1;
+
+      final now = tz.TZDateTime.now(tz.local);
+
+      
+      tz.TZDateTime nextNotificationTime = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        habit.notificationTime.hour,
+        habit.notificationTime.minute,
+        0, 
+        0, 
+      );
+
+      
+      if (nextNotificationTime.isBefore(now)) {
+        nextNotificationTime =
+            nextNotificationTime.add(const Duration(days: 1));
+      }
+
+      
+      while (nextNotificationTime.weekday != targetDayOfWeek) {
+        nextNotificationTime =
+            nextNotificationTime.add(const Duration(days: 1));
+      }
+
+      final notificationId =
+          habit.id.hashCode + dayIndex; 
+
+      await _localNotificationsPlugin.zonedSchedule(
+        notificationId,
+        'Lembrete: ${habit.name}',
+        habit.description.isNotEmpty
+            ? habit.description
+            : 'É hora de fazer seu hábito!',
+        nextNotificationTime, 
+        platformChannelSpecifics,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents
+            .dayOfWeekAndTime, 
+        payload: habit.id,
+      );
+      debugPrint(
+          'Notification scheduled for ${habit.name} (dayIndex $dayIndex / DT weekday $targetDayOfWeek) at ${habit.notificationTime.hour}:${habit.notificationTime.minute.toString().padLeft(2, '0')} on ${nextNotificationTime.toIso8601String()} with ID $notificationId');
+    }
+  }
+
+  
+  Future<void> _cancelNotificationsForHabit(String habitId) async {
+    for (int i = 0; i < 7; i++) {
+      final notificationId = habitId.hashCode + i;
+      await _localNotificationsPlugin.cancel(notificationId);
+      debugPrint(
+          'Canceled notification with ID: $notificationId for habit $habitId');
+    }
+  }
+
+  
+  Future<void> debugListPendingNotifications() async {
+    final List<PendingNotificationRequest> pendingNotificationRequests =
+        await _localNotificationsPlugin.pendingNotificationRequests();
+
+    debugPrint('--- Pending Notifications ---');
+    if (pendingNotificationRequests.isEmpty) {
+      debugPrint('No pending notifications found.');
+    } else {
+      for (var pnr in pendingNotificationRequests) {
+        debugPrint(
+            'ID: ${pnr.id}, Title: ${pnr.title}, Body: ${pnr.body}, Payload: ${pnr.payload}');
+      }
+    }
+    debugPrint('-----------------------------');
   }
 }
