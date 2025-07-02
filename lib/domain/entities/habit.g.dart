@@ -21,17 +21,19 @@ class HabitAdapter extends TypeAdapter<Habit> {
       name: fields[1] as String,
       description: fields[2] as String,
       reminderDays: (fields[3] as List).cast<int>(),
-      notificationTime: fields[4] as TimeOfDay,
+      notificationTime: fields[4] as AppTimeOfDay,
       createdAt: fields[5] as DateTime,
       lastCompleted: fields[6] as DateTime?,
       streakCount: fields[7] as int,
+      completionDates: (fields[8] as List).cast<DateTime>(),
+      highestStreak: fields[9] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, Habit obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,7 +49,11 @@ class HabitAdapter extends TypeAdapter<Habit> {
       ..writeByte(6)
       ..write(obj.lastCompleted)
       ..writeByte(7)
-      ..write(obj.streakCount);
+      ..write(obj.streakCount)
+      ..writeByte(8)
+      ..write(obj.completionDates)
+      ..writeByte(9)
+      ..write(obj.highestStreak);
   }
 
   @override

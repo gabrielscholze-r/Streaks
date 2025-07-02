@@ -49,7 +49,7 @@ Future<void> init(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugi
   final appDocumentDir = await getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(HabitAdapter());
-  Hive.registerAdapter(TimeOfDayAdapter());
+  Hive.registerAdapter(AppTimeOfDayAdapter());
 
   final habitBox = await Hive.openBox<Habit>('habits');
   sl.registerLazySingleton<Box<Habit>>(() => habitBox);

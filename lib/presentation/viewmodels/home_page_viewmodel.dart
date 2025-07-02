@@ -4,8 +4,6 @@ import 'package:streaks/domain/usecases/get_habits.dart';
 import 'package:streaks/domain/usecases/save_habit.dart';
 import 'package:streaks/domain/usecases/delete_habit.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart'
-    as tz; 
 
 class HomePageViewModel extends ChangeNotifier {
   final GetHabits _getHabits;

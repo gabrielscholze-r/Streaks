@@ -15,13 +15,17 @@ class Habit extends Equatable {
   @HiveField(3)
   final List<int> reminderDays;
   @HiveField(4)
-  final TimeOfDay notificationTime;
+  final AppTimeOfDay notificationTime;
   @HiveField(5)
   final DateTime createdAt;
   @HiveField(6)
   final DateTime? lastCompleted;
   @HiveField(7)
   final int streakCount;
+  @HiveField(8)
+  final List<DateTime> completionDates;
+  @HiveField(9)
+  final int highestStreak;
 
   const Habit({
     required this.id,
@@ -32,6 +36,8 @@ class Habit extends Equatable {
     required this.createdAt,
     this.lastCompleted,
     this.streakCount = 0,
+    this.completionDates = const [],
+    this.highestStreak = 0,
   });
 
   @override
@@ -44,6 +50,8 @@ class Habit extends Equatable {
         createdAt,
         lastCompleted,
         streakCount,
+        completionDates,
+        highestStreak,
       ];
 
   Habit copyWith({
@@ -51,10 +59,12 @@ class Habit extends Equatable {
     String? name,
     String? description,
     List<int>? reminderDays,
-    TimeOfDay? notificationTime,
+    AppTimeOfDay? notificationTime,
     DateTime? createdAt,
     DateTime? lastCompleted,
     int? streakCount,
+    List<DateTime>? completionDates,
+    int? highestStreak,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -65,6 +75,8 @@ class Habit extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       lastCompleted: lastCompleted ?? this.lastCompleted,
       streakCount: streakCount ?? this.streakCount,
+      completionDates: completionDates ?? this.completionDates,
+      highestStreak: highestStreak ?? this.highestStreak,
     );
   }
 }

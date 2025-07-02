@@ -5,7 +5,6 @@ import 'package:streaks/domain/usecases/save_habit.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tz; 
 
 class AddEditHabitViewModel extends ChangeNotifier {
   final SaveHabit _saveHabit;
@@ -100,7 +99,7 @@ class AddEditHabitViewModel extends ChangeNotifier {
             name: _name,
             description: _description,
             reminderDays: _selectedDays,
-            notificationTime: streaks_time.TimeOfDay(
+            notificationTime: streaks_time.AppTimeOfDay(
                 hour: _selectedTime.hour, minute: _selectedTime.minute),
           ) ??
           Habit(
@@ -108,7 +107,7 @@ class AddEditHabitViewModel extends ChangeNotifier {
             name: _name,
             description: _description,
             reminderDays: _selectedDays,
-            notificationTime: streaks_time.TimeOfDay(
+            notificationTime: streaks_time.AppTimeOfDay(
                 hour: _selectedTime.hour, minute: _selectedTime.minute),
             createdAt: DateTime.now(),
           );
