@@ -45,7 +45,7 @@ class _AddEditHabitPageState extends State<AddEditHabitPage> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _viewModel.dispose();
+    _viewModel.dispose(); 
     super.dispose();
   }
 

@@ -19,7 +19,7 @@ class _ScorePageState extends State<ScorePage> {
   Widget build(BuildContext context) {
     final Color primaryColor = Theme.of(context).primaryColor;
     final Color accentColor =
-        Theme.of(context).colorScheme.secondary;
+        Theme.of(context).colorScheme.secondary; 
 
     return Consumer<HomePageViewModel>(
       builder: (context, viewModel, child) {
@@ -49,7 +49,7 @@ class _ScorePageState extends State<ScorePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment:
-                CrossAxisAlignment.center,
+                CrossAxisAlignment.center, 
             children: [
               Container(
                 decoration: BoxDecoration(
@@ -138,7 +138,7 @@ class _ScorePageState extends State<ScorePage> {
                         child: Column(
                           children: [
                             ...sortedHabits
-                                .take(3)
+                                .take(3) 
                                 .map((habit) => Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical:

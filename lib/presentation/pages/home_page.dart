@@ -22,13 +22,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _viewModel = sl<HomePageViewModel>();
-    _viewModel.fetchHabits();
+    _viewModel = sl<HomePageViewModel>();   
   }
 
   @override
   void dispose() {
-    _viewModel.dispose();
+    _viewModel.dispose(); 
     super.dispose();
   }
 
@@ -85,7 +84,6 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(habit.description),
-                        
                         Text(
                             'Notification: ${habit.notificationTime.hour.toString().padLeft(2, '0')}:${habit.notificationTime.minute.toString().padLeft(2, '0')}'),
                         Text('Streak: ${habit.streakCount} days'),

@@ -16,18 +16,18 @@ import 'package:streaks/domain/usecases/delete_habit.dart';
 import 'package:streaks/presentation/viewmodels/home_page_viewmodel.dart';
 import 'package:streaks/presentation/viewmodels/add_edit_habit_viewmodel.dart';
 
-
 final sl = GetIt.instance;
 
-Future<void> init(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
-  sl.registerLazySingleton<FlutterLocalNotificationsPlugin>(() => flutterLocalNotificationsPlugin);
+Future<void> init(
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+  sl.registerLazySingleton<FlutterLocalNotificationsPlugin>(
+      () => flutterLocalNotificationsPlugin);
 
   sl.registerFactory(() => HomePageViewModel(
-        getHabits: sl(),
-        saveHabit: sl(),
-        deleteHabit: sl(),
-        localNotificationsPlugin: sl()
-      ));
+      getHabits: sl(),
+      saveHabit: sl(),
+      deleteHabit: sl(),
+      localNotificationsPlugin: sl()));
   sl.registerFactory(() => AddEditHabitViewModel(
         saveHabit: sl(),
         uuid: sl(),

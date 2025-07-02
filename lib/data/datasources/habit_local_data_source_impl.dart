@@ -5,9 +5,9 @@ import 'package:streaks/domain/entities/habit.dart';
 
 class HabitLocalDataSourceImpl implements HabitLocalDataSource {
 
-  final Box<Habit> habitBox;
+  final Box<Habit> habitBox; 
 
-  HabitLocalDataSourceImpl(this.habitBox);
+  HabitLocalDataSourceImpl(this.habitBox); 
 
   @override
   Future<List<Habit>> getHabits() async {

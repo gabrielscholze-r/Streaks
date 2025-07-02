@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:streaks/domain/entities/habit.dart';
-import 'package:streaks/domain/entities/time_of_day.dart' as streaks_time;
-import 'package:streaks/domain/usecases/save_habit.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:uuid/uuid.dart';
+import 'package:streaks/domain/entities/habit.dart';
+import 'package:streaks/domain/entities/time_of_day.dart' as streaks_time; 
+import 'package:streaks/domain/usecases/save_habit.dart';
 
 class AddEditHabitViewModel extends ChangeNotifier {
   final SaveHabit _saveHabit;
@@ -23,7 +23,7 @@ class AddEditHabitViewModel extends ChangeNotifier {
   String _name = '';
   String _description = '';
   List<int> _selectedDays = [];
-  TimeOfDay _selectedTime = TimeOfDay(hour: 9, minute: 0);
+  TimeOfDay _selectedTime = const TimeOfDay(hour: 9, minute: 0); 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -43,7 +43,7 @@ class AddEditHabitViewModel extends ChangeNotifier {
       _name = '';
       _description = '';
       _selectedDays = [];
-      _selectedTime = TimeOfDay(hour: 9, minute: 0);
+      _selectedTime = const TimeOfDay(hour: 9, minute: 0);
     }
     notifyListeners();
   }
@@ -99,7 +99,7 @@ class AddEditHabitViewModel extends ChangeNotifier {
             name: _name,
             description: _description,
             reminderDays: _selectedDays,
-            notificationTime: streaks_time.AppTimeOfDay(
+            notificationTime: streaks_time.AppTimeOfDay( 
                 hour: _selectedTime.hour, minute: _selectedTime.minute),
           ) ??
           Habit(
@@ -107,9 +107,11 @@ class AddEditHabitViewModel extends ChangeNotifier {
             name: _name,
             description: _description,
             reminderDays: _selectedDays,
-            notificationTime: streaks_time.AppTimeOfDay(
+            notificationTime: streaks_time.AppTimeOfDay( 
                 hour: _selectedTime.hour, minute: _selectedTime.minute),
             createdAt: DateTime.now(),
+            completionDates: const [], 
+            highestStreak: 0, 
           );
 
       await _saveHabit.call(habitToSave);
@@ -121,8 +123,6 @@ class AddEditHabitViewModel extends ChangeNotifier {
       }
       await _scheduleNotificationsForHabit(habitToSave);
 
-      
-      await debugListPendingNotifications(); 
 
       _isSaving = false;
       notifyListeners();
@@ -136,30 +136,29 @@ class AddEditHabitViewModel extends ChangeNotifier {
   }
 
   Future<void> _scheduleNotificationsForHabit(Habit habit) async {
-    await _cancelNotificationsForHabit(
-        habit.id); 
+    await _cancelNotificationsForHabit(habit.id);
 
     if (habit.reminderDays.isEmpty) {
-      return;
+      return; 
     }
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+        const AndroidNotificationDetails(
       'streaks_habit_channel', 
-      'Streaks Habit Reminders',
+      'Streaks Habit Reminders', 
       channelDescription: 'Reminders for your daily habits',
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
     );
     final DarwinNotificationDetails iOSPlatformChannelSpecifics =
-        DarwinNotificationDetails();
+        const DarwinNotificationDetails();
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics,
     );
 
-    for (final dayIndex in habit.reminderDays) {
+    for (final dayIndex in habit.reminderDays) { 
       
       int targetDayOfWeek = (dayIndex == 0) ? DateTime.sunday : dayIndex + 1;
 
@@ -188,7 +187,7 @@ class AddEditHabitViewModel extends ChangeNotifier {
         nextNotificationTime =
             nextNotificationTime.add(const Duration(days: 1));
       }
-
+      
       final notificationId =
           habit.id.hashCode + dayIndex; 
 
@@ -222,20 +221,4 @@ class AddEditHabitViewModel extends ChangeNotifier {
     }
   }
 
-  
-  Future<void> debugListPendingNotifications() async {
-    final List<PendingNotificationRequest> pendingNotificationRequests =
-        await _localNotificationsPlugin.pendingNotificationRequests();
-
-    debugPrint('--- Pending Notifications ---');
-    if (pendingNotificationRequests.isEmpty) {
-      debugPrint('No pending notifications found.');
-    } else {
-      for (var pnr in pendingNotificationRequests) {
-        debugPrint(
-            'ID: ${pnr.id}, Title: ${pnr.title}, Body: ${pnr.body}, Payload: ${pnr.payload}');
-      }
-    }
-    debugPrint('-----------------------------');
-  }
 }

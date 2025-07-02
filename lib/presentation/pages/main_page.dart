@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
+import 'package:streaks/presentation/viewmodels/home_page_viewmodel.dart';
 import 'package:streaks/presentation/pages/home_page.dart';
 import 'package:streaks/presentation/pages/score_page.dart';
-import 'package:streaks/presentation/viewmodels/home_page_viewmodel.dart';
 
 final sl = GetIt.instance;
 
@@ -39,6 +39,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
+    _homePageViewModel.dispose();
     super.dispose();
   }
 
