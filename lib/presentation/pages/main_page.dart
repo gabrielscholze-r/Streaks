@@ -24,8 +24,8 @@ class _MainPageState extends State<MainPage> {
   ];
 
   static const List<String> _appBarTitles = <String>[
-    'My Habits',
-    'Overall Score',
+    'Streaks',
+    'Score',
   ];
 
   @override

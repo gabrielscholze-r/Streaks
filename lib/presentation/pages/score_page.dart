@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streaks/presentation/viewmodels/home_page_viewmodel.dart';
+import 'package:streaks/presentation/pages/add_edit_habit_page.dart';
 
 class ScorePage extends StatefulWidget {
   const ScorePage({super.key});
@@ -17,20 +18,22 @@ class _ScorePageState extends State<ScorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = Theme.of(context).primaryColor;
-    final Color accentColor =
-        Theme.of(context).colorScheme.secondary; 
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
+    final Color accentColor = Theme.of(context).colorScheme.secondary;
+    final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
+    final Color onSurfaceVariantColor =
+        Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Consumer<HomePageViewModel>(
       builder: (context, viewModel, child) {
         if (viewModel.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(child: CircularProgressIndicator(color: primaryColor));
         }
         if (viewModel.errorMessage != null) {
           return Center(
             child: Text(
               'Error loading score: ${viewModel.errorMessage}',
-              style: const TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           );
         }
@@ -40,16 +43,136 @@ class _ScorePageState extends State<ScorePage> {
           (sum, habit) => sum + habit.streakCount,
         );
 
-        final sortedHabits = viewModel.habits.toList()
+        final habitsWithStreaks =
+            viewModel.habits.where((habit) => habit.streakCount > 0).toList();
+        final sortedHabits = habitsWithStreaks.toList()
           ..sort((a, b) => b.streakCount.compareTo(a.streakCount));
 
+        if (totalScore == 0 && viewModel.habits.isNotEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.sentiment_dissatisfied,
+                      size: 80, color: onSurfaceVariantColor),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Você não possui nenhum hábito ativo no momento.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: onSurfaceColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Comece a registrar suas streaks para ver seu progresso aqui!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: onSurfaceVariantColor,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop();
+                      }
+                      final result = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AddEditHabitPage(),
+                        ),
+                      );
+                      if (result == true) {
+                        viewModel.fetchHabits();
+                      }
+                    },
+                    icon: const Icon(Icons.add_circle_outline),
+                    label: const Text('Adicionar Novo Hábito'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      textStyle: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (viewModel.habits.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_task, size: 80, color: onSurfaceVariantColor),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Nenhum hábito cadastrado ainda.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: onSurfaceColor,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Comece adicionando seu primeiro hábito para iniciar suas streaks!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: onSurfaceVariantColor,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final result = await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const AddEditHabitPage(),
+                        ),
+                      );
+                      if (result == true) {
+                        viewModel.fetchHabits();
+                      }
+                    },
+                    icon: const Icon(Icons.add_circle_outline),
+                    label: const Text('Adicionar Primeiro Hábito'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      textStyle: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 24.0, vertical: 32.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment:
-                CrossAxisAlignment.center, 
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 decoration: BoxDecoration(
@@ -66,30 +189,27 @@ class _ScorePageState extends State<ScorePage> {
                 child: Icon(
                   Icons.star,
                   size: 100,
-                  color: Colors.amber[700],
+                  color: accentColor,
                 ),
               ),
               const SizedBox(height: 32),
-
               Text(
                 'Sua Pontuação Total de Streaks:',
                 style: TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.w600, 
-                  color: Colors.grey[700], 
+                  fontWeight: FontWeight.w600,
+                  color: onSurfaceColor,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-
               Text(
-                '$totalScore dias', 
+                '$totalScore dias',
                 style: TextStyle(
-                  fontSize: 72, 
-                  fontWeight: FontWeight.w900, 
-                  color: primaryColor, 
+                  fontSize: 72,
+                  fontWeight: FontWeight.w900,
+                  color: primaryColor,
                   shadows: [
-                    
                     Shadow(
                       offset: const Offset(2, 2),
                       blurRadius: 3.0,
@@ -99,20 +219,17 @@ class _ScorePageState extends State<ScorePage> {
                 ),
               ),
               const SizedBox(height: 32),
-
               Text(
                 'Continue o ótimo trabalho! A consistência é fundamental.',
                 style: TextStyle(
                   fontSize: 18,
                   fontStyle: FontStyle.italic,
-                  color: Colors.grey[600], 
+                  color: onSurfaceVariantColor,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(
-                  height: 48), 
-
-              if (viewModel.habits.isNotEmpty)
+              const SizedBox(height: 48),
+              if (sortedHabits.isNotEmpty)
                 Column(
                   children: [
                     Text(
@@ -120,39 +237,35 @@ class _ScorePageState extends State<ScorePage> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
+                        color: onSurfaceColor,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    
                     Card(
-                      elevation: 4, 
+                      elevation: 4,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(15), 
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16.0), 
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
                             ...sortedHabits
-                                .take(3) 
+                                .take(3)
                                 .map((habit) => Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          vertical:
-                                              8.0), 
+                                          vertical: 8.0),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween, 
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             habit.name,
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w500,
-                                                color: Colors.grey[850]),
+                                                color: onSurfaceColor),
                                           ),
                                           Text(
                                             '${habit.streakCount} dias',
@@ -165,8 +278,7 @@ class _ScorePageState extends State<ScorePage> {
                                       ),
                                     ))
                                 .toList(),
-                            if (sortedHabits.length >
-                                3) 
+                            if (sortedHabits.length > 3)
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
@@ -174,7 +286,7 @@ class _ScorePageState extends State<ScorePage> {
                                   style: TextStyle(
                                       fontSize: 14,
                                       fontStyle: FontStyle.italic,
-                                      color: Colors.grey[500]),
+                                      color: onSurfaceVariantColor),
                                 ),
                               ),
                           ],

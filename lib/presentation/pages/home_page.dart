@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:get_it/get_it.dart';
@@ -22,12 +20,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _viewModel = sl<HomePageViewModel>();   
+    _viewModel = sl<HomePageViewModel>();
   }
 
   @override
   void dispose() {
-    _viewModel.dispose(); 
+    _viewModel.dispose();
     super.dispose();
   }
 
@@ -36,10 +34,6 @@ class _HomePageState extends State<HomePage> {
     return ChangeNotifierProvider<HomePageViewModel>.value(
       value: _viewModel,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('My Habits'),
-          centerTitle: true,
-        ),
         body: Consumer<HomePageViewModel>(
           builder: (context, viewModel, child) {
             if (viewModel.isLoading) {
@@ -141,10 +135,10 @@ class _HomePageState extends State<HomePage> {
                                         Navigator.of(context).pop();
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                              SnackBar(
-                                                  content: Text(
-                                                      '${habit.name} deleted.')),
-                                            );
+                                          SnackBar(
+                                              content: Text(
+                                                  '${habit.name} deleted.')),
+                                        );
                                       },
                                     ),
                                   ],
