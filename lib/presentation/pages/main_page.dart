@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; 
 import 'package:get_it/get_it.dart';
 import 'package:streaks/presentation/viewmodels/home_page_viewmodel.dart';
 import 'package:streaks/presentation/pages/home_page.dart';
@@ -16,11 +16,12 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-  late HomePageViewModel _homePageViewModel;
+  
+  
 
   static const List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
-    ScorePage(),
+    HomePage(), 
+    ScorePage(), 
   ];
 
   static const List<String> _appBarTitles = <String>[
@@ -31,15 +32,12 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _homePageViewModel = sl<HomePageViewModel>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _homePageViewModel.fetchHabits();
-    });
+    
+    
   }
-
+  
   @override
   void dispose() {
-    _homePageViewModel.dispose();
     super.dispose();
   }
 
@@ -47,13 +45,19 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
-    _homePageViewModel.fetchHabits();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomePageViewModel>.value(
-      value: _homePageViewModel,
+    
+    
+    return ChangeNotifierProvider<HomePageViewModel>(
+      create: (context) {
+        final viewModel = sl<HomePageViewModel>();
+        
+        viewModel.fetchHabits();
+        return viewModel;
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text(_appBarTitles[_selectedIndex]),
@@ -75,7 +79,7 @@ class _MainPageState extends State<MainPage> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Theme.of(context).primaryColor,
+          selectedItemColor: Theme.of(context).colorScheme.primary, 
           onTap: _onItemTapped,
         ),
       ),

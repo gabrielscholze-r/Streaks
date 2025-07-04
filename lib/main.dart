@@ -4,9 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:streaks/core/theme/app_theme.dart';
-import 'package:streaks/presentation/pages/main_page.dart';
+
+import 'package:streaks/presentation/pages/splash_screen.dart'; 
 import 'package:streaks/core/di/injection_container.dart' as di;
+import 'package:streaks/core/theme/app_theme.dart';
 
 final sl = GetIt.instance;
 
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Streaks',
       theme: AppTheme.lightTheme,
-      home: const MainPage(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -18,11 +18,11 @@ class _ScorePageState extends State<ScorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = Theme.of(context).colorScheme.primary;
-    final Color accentColor = Theme.of(context).colorScheme.secondary;
-    final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
-    final Color onSurfaceVariantColor =
-        Theme.of(context).colorScheme.onSurfaceVariant;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final Color primaryColor = colorScheme.primary;
+    final Color accentColor = colorScheme.secondary;
+    final Color onSurfaceColor = colorScheme.onSurface;
+    final Color onSurfaceVariantColor = colorScheme.onSurfaceVariant;
 
     return Consumer<HomePageViewModel>(
       builder: (context, viewModel, child) {
@@ -32,15 +32,16 @@ class _ScorePageState extends State<ScorePage> {
         if (viewModel.errorMessage != null) {
           return Center(
             child: Text(
-              'Error loading score: ${viewModel.errorMessage}',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              'Erro ao carregar pontuação: ${viewModel.errorMessage}',
+              style: TextStyle(color: colorScheme.error),
             ),
           );
         }
-
-        final totalScore = viewModel.habits.fold<int>(
+        final int highestOverallStreak = viewModel.habits.fold<int>(
           0,
-          (sum, habit) => sum + habit.streakCount,
+          (currentMax, habit) => habit.highestStreak > currentMax
+              ? habit.highestStreak
+              : currentMax,
         );
 
         final habitsWithStreaks =
@@ -48,7 +49,7 @@ class _ScorePageState extends State<ScorePage> {
         final sortedHabits = habitsWithStreaks.toList()
           ..sort((a, b) => b.streakCount.compareTo(a.streakCount));
 
-        if (totalScore == 0 && viewModel.habits.isNotEmpty) {
+        if (highestOverallStreak == 0 && viewModel.habits.isNotEmpty) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -79,9 +80,6 @@ class _ScorePageState extends State<ScorePage> {
                   const SizedBox(height: 32),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      if (Navigator.of(context).canPop()) {
-                        Navigator.of(context).pop();
-                      }
                       final result = await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const AddEditHabitPage(),
@@ -95,7 +93,7 @@ class _ScorePageState extends State<ScorePage> {
                     label: const Text('Adicionar Novo Hábito'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      foregroundColor: colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 24, vertical: 12),
                       textStyle: const TextStyle(
@@ -152,7 +150,7 @@ class _ScorePageState extends State<ScorePage> {
                     label: const Text('Adicionar Primeiro Hábito'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      foregroundColor: colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 24, vertical: 12),
                       textStyle: const TextStyle(
@@ -194,7 +192,7 @@ class _ScorePageState extends State<ScorePage> {
               ),
               const SizedBox(height: 32),
               Text(
-                'Sua Pontuação Total de Streaks:',
+                'Sua Maior Streak Individual:',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
@@ -204,7 +202,7 @@ class _ScorePageState extends State<ScorePage> {
               ),
               const SizedBox(height: 12),
               Text(
-                '$totalScore dias',
+                '$highestOverallStreak dias',
                 style: TextStyle(
                   fontSize: 72,
                   fontWeight: FontWeight.w900,
@@ -233,7 +231,7 @@ class _ScorePageState extends State<ScorePage> {
                 Column(
                   children: [
                     Text(
-                      'Hábitos com Maiores Streaks:',
+                      'Hábitos com Maiores Streaks Ativas:',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
