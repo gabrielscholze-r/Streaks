@@ -1,16 +1,21 @@
-# streaks
+# Streaks
 
-A new Flutter project.
+A simple Flutter application to manage and track daily habits, helping users build consistency and visualize progress through streaks.
 
-## Getting Started
+## Features
+    
+- Habit Management: Add, edit, delete habits.
 
-This project is a starting point for a Flutter application.
+- Streak Tracking: Mark habits complete to build streaks.
 
-A few resources to get you started if this is your first Flutter project:
+- Notifications: Set habit reminders.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Score: View highest individual streak and overall progress.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Intuitive UI: Clean and easy to use.
+
+
+## Links
+Demo video: https://youtu.be/diez8d2JbTI
+
+Description Report: https://docs.google.com/document/d/11G_tvStJK7swubFEEH6qMGeOEx6kMd8iaNS-la3WEe4/edit?usp=sharing

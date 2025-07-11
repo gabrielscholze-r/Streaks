@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streaks/presentation/viewmodels/home_page_viewmodel.dart';
-import 'package:streaks/domain/entities/habit.dart';
 import 'package:streaks/presentation/pages/add_edit_habit_page.dart';
 
 class HomePage extends StatefulWidget {

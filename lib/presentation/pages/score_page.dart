@@ -78,31 +78,6 @@ class _ScorePageState extends State<ScorePage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const AddEditHabitPage(),
-                        ),
-                      );
-                      if (result == true) {
-                        viewModel.fetchHabits();
-                      }
-                    },
-                    icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Adicionar Novo Hábito'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -135,31 +110,6 @@ class _ScorePageState extends State<ScorePage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const AddEditHabitPage(),
-                        ),
-                      );
-                      if (result == true) {
-                        viewModel.fetchHabits();
-                      }
-                    },
-                    icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Adicionar Primeiro Hábito'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      textStyle: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
